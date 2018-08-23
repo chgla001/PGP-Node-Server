@@ -1,25 +1,28 @@
-var http = require('http'),
+const http = require('http'),
     express = require('express'),
-    socketManager = require('./socket-manager');
+    bodyParser = require('body-parser');
+
+const socketManager = require('./socket-manager'),
+    login = require('./routes/login-route'),
+    messages = require('./routes/messages-route');
 
 const PORT = '4000',
-    HOST = '127.0.0.1';
+    HOST = '192.168.2.116';
 
 var app = express();
+// middleware
+app.use(bodyParser.json());
 
-// app.use(app.router);
-// app.use(express.static(__dirname + '/public'));
+//routes
+app.use('/login', login);
+app.use('/messages', messages);
 
 var server = http.createServer(app)
-server.listen(PORT, HOST, function(err){
-if (err) {
-    console.log(err);
-} else {
-    console.log('Server is running on ' + HOST + ':' + PORT);
-}
+server.listen(PORT, HOST, function (err) {
+    if (err) {
+        console.log(err);
+    } else {
+        console.log('Server is running on ' + HOST + ':' + PORT);
+    }
 });
-socketManager.listen(server);
-
-// app.get('/', function (req, res) {
-//     res.sendfile(__dirname + '/views/index.html');
-// });
+//socketManager.listen(server);

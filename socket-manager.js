@@ -8,14 +8,20 @@ var socketio = require('socket.io'),
     namesUsed = [];
 
 exports.listen = function (express) {
+    console.log('socket io loaded');
     io = socketio.listen(express);
     io.set('log level', 2);
     io.sockets.on('connection', function (socket) {
-        initializeConnection(socket);
-        handleChoosingNicknames(socket);
+        console.log('a user connected');
+        // initializeConnection(socket);
+        // handleChoosingNicknames(socket);
         handleClientDisconnections(socket);
-        handleMessageBroadcasting(socket);
-        handlePrivateMessaging(socket);
+        // handleMessageBroadcasting(socket);
+        // handlePrivateMessaging(socket);
+        handleRegister(socket);
+        socket.on("message", function (text) {
+            socket.emit("message", text);
+        })
     });
 }
 
@@ -96,5 +102,20 @@ function handleClientDisconnections(socket) {
         delete clients[ind];
         delete nicknames[socket.id];
         io.sockets.emit('user disconnect', ind);
+    });
+}
+
+function handleRegister(socket) {
+    socket.on('register', function (registerobject, callback) {
+        console.log("Methodcall: handleRegister");
+        console.log(registerobject);
+        database.createUser(registerobject)
+            .then(function () {
+                callback("success");
+            })
+            .catch(function (err) {
+                callback("error");
+            });
+
     });
 }
