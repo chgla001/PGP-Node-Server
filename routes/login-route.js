@@ -26,6 +26,8 @@ router.post('/userdata', function (req, res) {
         console.log("user created");
         database.getUserByName(data.name).then(function(data){
             res.json(data)
+        }).catch(function(err){
+            console.log(err);
         })
     }).catch(function (err) {
         console.log(err);
@@ -59,6 +61,7 @@ router.get('/userById', function (req, res) {
         res.json(data);
     });
 });
+
 
 // // define the about route
 // router.get('/about', function (req, res) {

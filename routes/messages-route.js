@@ -10,27 +10,28 @@ router.get('/', function (req, res) {
 });
 
 router.post('/new-message', function (req, res) {
-    console.log(req.body);
-    res.json(req.body);
+    const data = req.body;
+    database.createMessage(data).then(function () {
+        console.log("message created");
+        database.getLastMessageFromSenderById(data.senderid).then(function (row) {
+            res.json(row);
+        })
+    })
 });
 
-// router.post('/userdata', function (req, res) {
-//     console.log(req.body);
-//     const data = req.body;
-//     database.createUser(data).then(function () {
-//         res.statusCode = 201;
-//     })
-// });
+router.get('/getMessages', function (req, res) {
+    console.log('getMessages');
 
-// router.get('/allusers', function (req, res) {
-//     database.getAllUsers().then(function (data) {
-//         res.json(data);
-//     });
-// });
+    var userid = req.param('senderid');
+    var chatpartnerid = req.param('recipientid');  
 
-// // define the about route
-// router.get('/about', function (req, res) {
-//     res.send('About birds')
-// })
+    database.getMessages(userid, chatpartnerid).then(function (data) {
+        console.log('getMessages succes:', data);
+        res.json(data);
+    }).catch(function (err) {
+        console.log('getMessages catch: err',err)
+        res.json("");
+    });
+});
 
 module.exports = router;

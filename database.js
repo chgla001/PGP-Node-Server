@@ -158,9 +158,7 @@ class Database {
      * @param data contains all data for a new message
      */
     createMessage(data) {
-        const stmt = this.db.prepare(`INSERT INTO messages
-        ${DATABASE_TABLES.MESSAGE_TABLE.TEXT}, ${DATABASE_TABLES.MESSAGE_TABLE.TIMESTAMP}, ${DATABASE_TABLES.MESSAGE_TABLE.READ},
-        ${DATABASE_TABLES.MESSAGE_TABLE.SENDER_ID}, ${DATABASE_TABLES.MESSAGE_TABLE.RECIPIENT_ID} VALUES ($text, $timestamp, $read, $senderid, $receiverid)`);
+        const stmt = this.db.prepare(`INSERT INTO messages (${DATABASE_TABLES.MESSAGE_TABLE.TEXT}, ${DATABASE_TABLES.MESSAGE_TABLE.TIMESTAMP}, ${DATABASE_TABLES.MESSAGE_TABLE.READ}, ${DATABASE_TABLES.MESSAGE_TABLE.SENDER_ID}, ${DATABASE_TABLES.MESSAGE_TABLE.RECIPIENT_ID}) VALUES ($text, $timestamp, $read, $senderid, $receiverid)`);
         return new Promise((resolve, reject) => {
             stmt.run({
                 $text: data.text,
@@ -179,13 +177,48 @@ class Database {
         });
     }
 
+    getLastMessageFromSenderById(senderId) {
+        console.log('getLastMessageFromSenderById()');
+        const stmt = this.db.prepare(`SELECT * FROM messages WHERE ${DATABASE_TABLES.MESSAGE_TABLE.SENDER_ID} = $senderId ORDER BY id DESC LIMIT 1`);
+        return new Promise((resolve, reject) => {
+            stmt.get({
+                $senderId: senderId
+            }, (err, row) => {
+                if (!err && row) {
+                    resolve(row);
+                } else {
+                    reject(err);
+                }
+            });
+            stmt.finalize();
+        });
+    }
+
+    getMessages(senderId, receiverId){
+        console.log(senderId + ' ' + receiverId);
+         const stmt = this.db.prepare(`SELECT * FROM messages WHERE ${DATABASE_TABLES.MESSAGE_TABLE.SENDER_ID} = $senderId AND ${DATABASE_TABLES.MESSAGE_TABLE.RECIPIENT_ID} = $receiverId`);
+        return new Promise((resolve, reject) => {
+            stmt.all({
+                $senderId: senderId,
+                $receiverId: receiverId
+            }, (err, row) => {
+                if (!err && row) {
+                    resolve(row);
+                } else {
+                    reject(err);
+                }
+            });
+            stmt.finalize();
+        });
+    }
+
     //get all unread messages
     getAllUnreadMessagesByUserId(userId) {
         const stmt = this.db.prepare(`SELECT * FROM messages WHERE ${DATABASE_TABLES.MESSAGE_TABLE.RECIPIENT_ID} = $userId AND ${DATABASE_TABLES.USER_TABLE.ID} = 'false'`);
         new Promise((resolve, reject) => {
             stmt.all({
                 $userId: userId
-            }, (err, rows) => {
+            }, (err, rows) => {              
                 if (!err && rows) {
                     resolve(rows);
                 } else {
