@@ -17,14 +17,15 @@ router.post('/example', function (req, res) {
 router.post('/userdata', function (req, res) {
     console.log(req.body);
     const data = req.body;
-    // console.log("username", data.name);
-    // console.log("email", data.email);
-    // console.log("password", data.password);
-    //console.log("pgpkey", data.pgpkey);
+    console.log("name", data.name);
+    console.log("email", data.email);
+    console.log("password", data.password);
+    console.log("pgpkey", data.pgpkey);
 
     database.createUser(data).then(function () {
-        console.log("user created");
+        // console.log("user created");
         database.getUserByName(data.name).then(function(data){
+            console.log('getUserByName',data);
             res.json(data)
         }).catch(function(err){
             console.log(err);
@@ -38,7 +39,7 @@ router.get('/allusers', function (req, res) {
     console.log('all users');
 
     database.getAllUsers().then(function (data) {
-        console.log('all users', data);
+        //console.log('all users', data);
         res.json(data);
     });
 });

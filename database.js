@@ -79,7 +79,7 @@ class Database {
      * @returns the full data for a user according to the id
      */
     getUserById(id) {
-        const stmt = this.db.prepare(`SELECT * FROM users WHERE ${DATABASE_TABLES.USER_TABLE.ID} = $id`);
+        const stmt = this.db.prepare(`SELECT ${DATABASE_TABLES.USER_TABLE.ID}, ${DATABASE_TABLES.USER_TABLE.NAME}, ${DATABASE_TABLES.USER_TABLE.EMAIL}, ${DATABASE_TABLES.USER_TABLE.PGP_KEY} FROM users WHERE ${DATABASE_TABLES.USER_TABLE.ID} = $id`);
         return new Promise((resolve, reject) => {
             stmt.get({
                 $id: id
