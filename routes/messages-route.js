@@ -42,4 +42,19 @@ router.get('/getMessages', function (req, res) {
     });
 });
 
+router.post('/updateMessage', function (req, res) {
+    console.log('updateMessage', req.body);
+
+    const messageId = req.body.id;
+    console.log("messageid = ", messageId);
+
+    database.updateMessage(messageId).then(function () {
+        console.log('updateMessage succes');
+            res.json('');
+    }).catch(function (err) {
+        console.log('updateMessage catch: err', err)
+        res.json("");
+    });
+});
+
 module.exports = router;

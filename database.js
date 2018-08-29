@@ -196,7 +196,7 @@ class Database {
 
     getMessages(senderId, receiverId){
         console.log(senderId + ' ' + receiverId);
-         const stmt = this.db.prepare(`SELECT * FROM messages WHERE ${DATABASE_TABLES.MESSAGE_TABLE.SENDER_ID} = $senderId AND ${DATABASE_TABLES.MESSAGE_TABLE.RECIPIENT_ID} = $receiverId`);
+         const stmt = this.db.prepare(`SELECT * FROM messages WHERE ${DATABASE_TABLES.MESSAGE_TABLE.SENDER_ID} = $senderId AND ${DATABASE_TABLES.MESSAGE_TABLE.RECIPIENT_ID} = $receiverId AND ${DATABASE_TABLES.MESSAGE_TABLE.READ} = 0`);
         return new Promise((resolve, reject) => {
             stmt.all({
                 $senderId: senderId,
@@ -212,23 +212,38 @@ class Database {
         });
     }
 
-    //get all unread messages
-    getAllUnreadMessagesByUserId(userId) {
-        const stmt = this.db.prepare(`SELECT * FROM messages WHERE ${DATABASE_TABLES.MESSAGE_TABLE.RECIPIENT_ID} = $userId AND ${DATABASE_TABLES.USER_TABLE.ID} = 'false'`);
-        new Promise((resolve, reject) => {
-            stmt.all({
-                $userId: userId
-            }, (err, rows) => {              
-                if (!err && rows) {
-                    resolve(rows);
-                } else {
+    // //get all unread messages
+    // getAllUnreadMessagesByUserId(userId) {
+    //     const stmt = this.db.prepare(`SELECT * FROM messages WHERE ${DATABASE_TABLES.MESSAGE_TABLE.RECIPIENT_ID} = $userId AND ${DATABASE_TABLES.MESSAGE_TABLE.READ} = 0`);
+    //     new Promise((resolve, reject) => {
+    //         stmt.all({
+    //             $userId: userId
+    //         }, (err, rows) => {              
+    //             if (!err && rows) {
+    //                 resolve(rows);
+    //             } else {
+    //                 reject(err);
+    //             }
+    //         });
+    //         stmt.finalize();
+    //     });
+    // }
+
+    updateMessage(messageId) {
+        const stmt = this.db.prepare(`UPDATE messages set ${DATABASE_TABLES.MESSAGE_TABLE.READ} = 1 WHERE ${DATABASE_TABLES.MESSAGE_TABLE.ID} = $messageId`);
+        return new Promise((resolve, reject) => {
+            stmt.run({
+                $messageId: messageId
+            }, (err) => {
+                if (err) {
                     reject(err);
+                } else {
+                    resolve();
                 }
             });
             stmt.finalize();
         });
     }
-
 
 
 }
