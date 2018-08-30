@@ -7,7 +7,7 @@ const socketManager = require('./socket-manager'),
     messages = require('./routes/messages-route');
 
 const PORT = '4000',
-    HOST = '192.168.2.116';
+    HOST = '192.168.2.116'; //IP has to be updated when starting the server
 
 var app = express();
 // middleware
@@ -25,4 +25,3 @@ server.listen(PORT, HOST, function (err) {
         console.log('Server is running on ' + HOST + ':' + PORT);
     }
 });
-//socketManager.listen(server);
